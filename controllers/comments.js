@@ -8,6 +8,8 @@ module.exports = {
         comment: req.body.comment,
         likes: 0,
         post: req.params.id,
+        createdByName: req.user.userName,
+        createdById: req.user.id,
       });
       console.log("Comment has been added!");
       res.redirect("/post/"+req.params.id);
@@ -15,18 +17,15 @@ module.exports = {
       console.log(err);
     }
   },
-  deletePost: async (req, res) => {
+  deleteComment: async (req, res) => {
     try {
-      // Find post by id
-      let post = await Post.findById({ _id: req.params.id });
-      // Delete image from cloudinary
-      await cloudinary.uploader.destroy(post.cloudinaryId);
-      // Delete post from db
-      await Post.remove({ _id: req.params.id });
-      console.log("Deleted Post");
-      res.redirect("/profile");
+      // Find comment by id
+      const comment = await Comment.deleteOne({ _id: req.params.commentid });
+
+      console.log("Deleted Comment");
+      res.redirect("/post/"+req.params.postid);
     } catch (err) {
-      res.redirect("/profile");
+      res.redirect("/post/"+req.params.postid);
     }
   },
 };
